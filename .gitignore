@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+
+# Dependencies and logs
+node_modules/
+*.log

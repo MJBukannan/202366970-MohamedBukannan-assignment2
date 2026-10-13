@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Makes the page scale correctly on phones and tablets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio of Mohamed AlJawad Bukannan, Computer Science student at KFUPM.">
+  <title>Mohamed AlJawad Bukannan | Portfolio</title>
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!--
+    Sets the colour theme before the page is painted. This has to run here,
+    rather than in script.js, or a visitor who chose dark mode sees a flash of
+    the light theme while the rest of the page loads.
+  -->
+  <script>
+    (function () {
+      var saved = null;
+      try {
+        saved = localStorage.getItem('theme');
+      } catch (error) {
+        /* Storage can be blocked; fall back to the operating system setting. */
+      }
+      var dark = saved
+        ? saved === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Site header with main navigation -->
+  <header class="site-header">
+    <a href="#about" class="logo">Mohamed AlJawad Bukannan</a>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <!-- aria-pressed tells assistive technology whether dark mode is on -->
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false">
+      Dark mode
+    </button>
+  </header>
+
+  <main>
+
+    <!-- About Me: intro, tagline, profile image -->
+    <section id="about" class="section about">
+      <h1>Mohamed AlJawad Bukannan</h1>
+      <p class="tagline">Computer Science student at KFUPM</p>
+      <p class="intro">
+        I'm a Computer Science student at King Fahd University of Petroleum and Minerals
+        who loves trying new things. I enjoy taking on challenges that push me past my limits,
+        and I'm always exploring new hobbies and interests along the way.
+      </p>
+    </section>
+
+    <!-- Projects: one card per project -->
+    <section id="projects" class="section projects">
+      <h2>Projects</h2>
+      <div class="project-grid">
+        <article class="project-card">
+          <img src="assets/images/project-placeholder.svg" alt="TermFS placeholder image">
+          <h3>TermFS</h3>
+          <p>
+            A terminal-based file system simulator that recreates UNIX commands such as
+            mkdir, cd, ls, rm, tree and grep. Files and folders are stored in a tree, each
+            folder uses a hash table for fast lookups, and grep uses the KMP search algorithm.
+          </p>
+        </article>
+        <article class="project-card">
+          <img src="assets/images/project-placeholder.svg" alt="Classroom Reservation System placeholder image">
+          <h3>Classroom Reservation System</h3>
+          <p>
+            A desktop app for booking KFUPM classrooms. Users can sign up, browse available
+            rooms and request a time slot, while admins add and edit rooms and approve or
+            reject reservation requests.
+          </p>
+        </article>
+        <article class="project-card">
+          <img src="assets/images/project-placeholder.svg" alt="Digital Queue Management System placeholder image">
+          <h3>Digital Queue Management System</h3>
+          <p>
+            A ticket and queue system, like the ones used in banks and clinics, running on an
+            FPGA board. It issues tickets, calls the next customer, shows the queue on
+            7-segment displays and uses LEDs to signal when the queue is full.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact form (front-end only, no backend) -->
+    <section id="contact" class="section contact">
+      <h2>Contact</h2>
+      <!--
+        novalidate switches off the browser's own validation pop-ups so the
+        messages written by js/script.js are shown instead. The browser still
+        checks the fields; the script reads that result from input.validity.
+      -->
+      <form id="contact-form" class="contact-form" novalidate>
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required aria-describedby="name-error">
+          <!-- aria-describedby links the message below to the input above it -->
+          <span class="field-error" id="name-error"></span>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required aria-describedby="email-error">
+          <span class="field-error" id="email-error"></span>
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required aria-describedby="message-error"></textarea>
+          <span class="field-error" id="message-error"></span>
+        </div>
+
+        <button type="submit">Send</button>
+
+        <!-- role="status" makes screen readers announce the result on submit -->
+        <p class="form-status" id="form-status" role="status"></p>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Mohamed AlJawad Bukannan</p>
+  </footer>
+
+  <!-- defer: run the script after the HTML has been parsed -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

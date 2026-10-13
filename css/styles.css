@@ -1,0 +1,402 @@
+/* Main stylesheet for the portfolio site */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #1e293b;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-accent: #0f766e;
+  --color-accent-dark: #115e59;
+  --color-accent-soft: #ccfbf1;
+  /* Text drawn on top of an accent-coloured background */
+  --color-on-accent: #ffffff;
+  --color-error: #b91c1c;
+
+  /* System fonts only: nothing to download */
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --max-width: 1100px;
+}
+
+/* ---------- Dark theme ----------
+   Set by js/script.js as data-theme="dark" on <html>.
+   Only the token values change: every rule below keeps using var(--...),
+   so there is no second copy of the layout to maintain.
+   The accent is lightened here because the light-theme teal (#0f766e) does
+   not have enough contrast against a dark background to stay readable. */
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #e2e8f0;
+  --color-muted: #94a3b8;
+  --color-border: #334155;
+  --color-accent: #2dd4bf;
+  --color-accent-dark: #5eead4;
+  --color-accent-soft: #134e4a;
+  --color-on-accent: #0f172a;
+  --color-error: #fca5a5;
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  /* Tells the browser to draw its own UI (scrollbars, focus rings, form
+     controls) in dark mode too, instead of leaving them light. */
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Keeps section headings visible below the sticky header when jumping to them */
+  scroll-padding-top: 80px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+/* ---------- Header and navigation (Flexbox) ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.logo {
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-links a {
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  color: var(--color-muted);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+/* Added by the scroll spy in js/script.js to the link whose section is
+   currently in view. */
+.nav-links a.active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  color: var(--color-accent);
+}
+
+.theme-toggle {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  background-color: var(--color-surface);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* aria-pressed is the button's real state, so the styling follows it
+   rather than a separate class that could drift out of sync. */
+.theme-toggle[aria-pressed="true"] {
+  color: var(--color-accent-dark);
+  background-color: var(--color-accent-soft);
+  border-color: transparent;
+}
+
+/* ---------- Sections ---------- */
+.section {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.section h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Short accent bar under each section heading */
+.section h2::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 4px;
+  margin-top: 0.5rem;
+  border-radius: 2px;
+  background-color: var(--color-accent);
+}
+
+/* ---------- About ---------- */
+.about {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.about h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  display: inline-block;
+  margin: 0 0 1.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--color-accent-dark);
+  background-color: var(--color-accent-soft);
+}
+
+.intro {
+  max-width: 60ch;
+  font-size: 1.15rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Projects (Grid) ---------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.project-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.project-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.project-card h3 {
+  margin: 1.25rem 1.25rem 0.5rem;
+  font-size: 1.2rem;
+}
+
+.project-card p {
+  margin: 0 1.25rem 1.25rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Contact form ---------- */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.contact-form label {
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  background-color: var(--color-bg);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.field-error {
+  /* Space is reserved even when empty, so the form does not jump
+     when a message appears. */
+  min-height: 1.25rem;
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--color-error);
+}
+
+/* aria-invalid is set by the script, so the styling follows the same state
+   that assistive technology reads. */
+.contact-form [aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.contact-form [aria-invalid="true"]:focus {
+  outline-color: var(--color-error);
+}
+
+.form-status {
+  margin: 1.25rem 0 0;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.form-status.success {
+  color: var(--color-accent-dark);
+}
+
+/* No gap while there is nothing to say */
+.form-status:empty {
+  margin: 0;
+}
+
+.contact-form button {
+  align-self: flex-start;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-on-accent);
+  background-color: var(--color-accent);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.contact-form button:hover,
+.contact-form button:focus {
+  background-color: var(--color-accent-dark);
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------- Tablet (768px and below) ---------- */
+@media (max-width: 768px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section {
+    padding: 3rem 1.5rem;
+  }
+
+  .about {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/* ---------- Mobile (480px and below) ---------- */
+@media (max-width: 480px) {
+  .site-header {
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+  }
+
+  /* The stacked header is taller now that it also holds the theme toggle,
+     so jumped-to headings need more room to clear it. */
+  html {
+    scroll-padding-top: 155px;
+  }
+
+  .nav-links {
+    gap: 1.25rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 2.5rem 1rem;
+  }
+
+  .contact-form {
+    padding: 1.25rem;
+  }
+
+  .contact-form button {
+    align-self: stretch;
+  }
+}
