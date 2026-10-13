@@ -62,35 +62,23 @@
     <!-- Projects: one card per project -->
     <section id="projects" class="section projects">
       <h2>Projects</h2>
-      <div class="project-grid">
-        <article class="project-card">
-          <img src="assets/images/project-placeholder.svg" alt="TermFS placeholder image">
-          <h3>TermFS</h3>
-          <p>
-            A terminal-based file system simulator that recreates UNIX commands such as
-            mkdir, cd, ls, rm, tree and grep. Files and folders are stored in a tree, each
-            folder uses a hash table for fast lookups, and grep uses the KMP search algorithm.
-          </p>
-        </article>
-        <article class="project-card">
-          <img src="assets/images/project-placeholder.svg" alt="Classroom Reservation System placeholder image">
-          <h3>Classroom Reservation System</h3>
-          <p>
-            A desktop app for booking KFUPM classrooms. Users can sign up, browse available
-            rooms and request a time slot, while admins add and edit rooms and approve or
-            reject reservation requests.
-          </p>
-        </article>
-        <article class="project-card">
-          <img src="assets/images/project-placeholder.svg" alt="Digital Queue Management System placeholder image">
-          <h3>Digital Queue Management System</h3>
-          <p>
-            A ticket and queue system, like the ones used in banks and clinics, running on an
-            FPGA board. It issues tickets, calls the next customer, shows the queue on
-            7-segment displays and uses LEDs to signal when the queue is full.
-          </p>
-        </article>
+      <!-- Filter and search controls. The cards themselves are built by
+           js/script.js from the projects array, so they are not written here. -->
+      <div class="project-controls">
+        <div class="filter-buttons" role="group" aria-label="Filter projects by category">
+          <button type="button" class="filter-btn" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="filter-btn" data-filter="software" aria-pressed="false">Software</button>
+          <button type="button" class="filter-btn" data-filter="hardware" aria-pressed="false">Hardware</button>
+        </div>
+        <label for="project-search" class="visually-hidden">Search projects</label>
+        <input type="search" id="project-search" class="project-search" placeholder="Search by title or tag">
       </div>
+
+      <!-- aria-live makes screen readers announce the new count after filtering -->
+      <p class="project-count" id="project-count" aria-live="polite"></p>
+
+      <div class="project-grid" id="project-grid"></div>
+      <noscript><p>Turn on JavaScript to see my projects.</p></noscript>
     </section>
 
     <!-- Contact form (front-end only, no backend) -->

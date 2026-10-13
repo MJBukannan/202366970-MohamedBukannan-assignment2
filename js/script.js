@@ -4,6 +4,7 @@
    1. Theme toggle   - light / dark, remembered between visits
    2. Contact form   - validation and feedback (front-end only, no backend)
    3. Scroll spy     - highlights the nav link for the section in view
+   4. Projects       - cards built from an array, with filter and search
 
    Smooth scrolling is not here on purpose: it is one line of CSS
    (scroll-behavior: smooth in css/styles.css), so writing it again in
@@ -203,7 +204,127 @@ function initScrollSpy() {
   });
 }
 
+/* --------------------------------------------------------------------------
+   4. Projects
+   The projects live in one array instead of being written out in the HTML.
+   The cards are built from it, so filtering and searching only have to
+   decide which items to show, then rebuild the grid.
+   -------------------------------------------------------------------------- */
+const projects = [
+  {
+    title: 'TermFS',
+    category: 'software',
+    tags: ['Java', 'CLI', 'data structures', 'hash table', 'KMP'],
+    image: 'assets/images/project-placeholder.svg',
+    description: 'A terminal-based file system simulator that recreates UNIX commands such as '
+      + 'mkdir, cd, ls, rm, tree and grep. Files and folders are stored in a tree, each '
+      + 'folder uses a hash table for fast lookups, and grep uses the KMP search algorithm.'
+  },
+  {
+    title: 'Classroom Reservation System',
+    category: 'software',
+    tags: ['Java', 'desktop app', 'booking', 'admin panel'],
+    image: 'assets/images/project-placeholder.svg',
+    description: 'A desktop app for booking KFUPM classrooms. Users can sign up, browse available '
+      + 'rooms and request a time slot, while admins add and edit rooms and approve or '
+      + 'reject reservation requests.'
+  },
+  {
+    title: 'Digital Queue Management System',
+    category: 'hardware',
+    tags: ['Verilog', 'FPGA', 'digital logic', '7-segment display'],
+    image: 'assets/images/project-placeholder.svg',
+    description: 'A ticket and queue system, like the ones used in banks and clinics, running on an '
+      + 'FPGA board. It issues tickets, calls the next customer, shows the queue on '
+      + '7-segment displays and uses LEDs to signal when the queue is full.'
+  }
+];
+
+function initProjects() {
+  const grid = document.getElementById('project-grid');
+  const count = document.getElementById('project-count');
+  const search = document.getElementById('project-search');
+  const buttons = Array.from(document.querySelectorAll('.filter-btn'));
+
+  if (!grid || !count || !search) return;
+
+  // The category currently selected: 'all', 'software' or 'hardware'.
+  let activeFilter = 'all';
+
+  // Builds one card element from one project object. textContent is used
+  // instead of innerHTML so the text is always shown as text, never run as HTML.
+  function createCard(project) {
+    const card = document.createElement('article');
+    card.className = 'project-card';
+
+    const image = document.createElement('img');
+    image.src = project.image;
+    image.alt = project.title + ' placeholder image';
+
+    const title = document.createElement('h3');
+    title.textContent = project.title;
+
+    const description = document.createElement('p');
+    description.textContent = project.description;
+
+    const tagList = document.createElement('ul');
+    tagList.className = 'tag-list';
+    project.tags.forEach(function (tag) {
+      const item = document.createElement('li');
+      item.textContent = tag;
+      tagList.appendChild(item);
+    });
+
+    card.append(image, title, description, tagList);
+    return card;
+  }
+
+  // True when a project passes both the category filter and the search text.
+  function matches(project, query) {
+    if (activeFilter !== 'all' && project.category !== activeFilter) {
+      return false;
+    }
+
+    if (query === '') {
+      return true;
+    }
+
+    const searchable = (project.title + ' ' + project.tags.join(' ')).toLowerCase();
+    return searchable.includes(query);
+  }
+
+  // Works out which projects to show, rebuilds the grid and updates the count.
+  function render() {
+    const query = search.value.trim().toLowerCase();
+    const visible = projects.filter(function (project) {
+      return matches(project, query);
+    });
+
+    grid.replaceChildren(...visible.map(createCard));
+    count.textContent = 'Showing ' + visible.length + ' of ' + projects.length + ' projects';
+  }
+
+  buttons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      activeFilter = button.dataset.filter;
+
+      // Only the clicked button is pressed; the CSS styles follow aria-pressed.
+      buttons.forEach(function (other) {
+        other.setAttribute('aria-pressed', String(other === button));
+      });
+
+      render();
+    });
+  });
+
+  // 'input' fires on every keystroke, so results update while typing.
+  search.addEventListener('input', render);
+
+  render();
+}
+
 /* The script tag uses defer, so the HTML is already parsed by this point. */
 initThemeToggle();
 initContactForm();
 initScrollSpy();
+initProjects();
