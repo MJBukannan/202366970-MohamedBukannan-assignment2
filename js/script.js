@@ -4,7 +4,10 @@
    1. Theme toggle   - light / dark, remembered between visits
    2. Contact form   - validation and feedback (front-end only, no backend)
    3. Scroll spy     - highlights the nav link for the section in view
-   4. Projects       - cards built from an array, with filter and search
+   4. Projects       - cards built from an array, with filter and search;
+                       the chosen filter is remembered between visits
+   5. GitHub repos   - latest public repos fetched from the GitHub API,
+                       with loading, error and retry states
 
    Smooth scrolling is not here on purpose: it is one line of CSS
    (scroll-behavior: smooth in css/styles.css), so writing it again in
@@ -250,6 +253,30 @@ function initProjects() {
 
   // The category currently selected: 'all', 'software' or 'hardware'.
   let activeFilter = 'all';
+  const FILTER_KEY = 'projectFilter';
+
+  // Selects a category and marks its button as pressed. The CSS styles
+  // follow aria-pressed, so this is all it takes to update the buttons.
+  function setFilter(value) {
+    activeFilter = value;
+    buttons.forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.dataset.filter === value));
+    });
+  }
+
+  // Restore the filter chosen on the last visit. It is only used if a button
+  // with that value still exists, so an old or edited value cannot break the page.
+  try {
+    const saved = localStorage.getItem(FILTER_KEY);
+    const isKnown = buttons.some(function (button) {
+      return button.dataset.filter === saved;
+    });
+    if (isKnown) {
+      setFilter(saved);
+    }
+  } catch (error) {
+    /* Storage blocked (private browsing): start on 'all'. */
+  }
 
   // Builds one card element from one project object. textContent is used
   // instead of innerHTML so the text is always shown as text, never run as HTML.
@@ -306,12 +333,13 @@ function initProjects() {
 
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {
-      activeFilter = button.dataset.filter;
+      setFilter(button.dataset.filter);
 
-      // Only the clicked button is pressed; the CSS styles follow aria-pressed.
-      buttons.forEach(function (other) {
-        other.setAttribute('aria-pressed', String(other === button));
-      });
+      try {
+        localStorage.setItem(FILTER_KEY, activeFilter);
+      } catch (error) {
+        /* Ignored: the filter still works for this visit. */
+      }
 
       render();
     });
@@ -323,8 +351,126 @@ function initProjects() {
   render();
 }
 
+/* --------------------------------------------------------------------------
+   5. GitHub repos
+   fetch() asks the GitHub API for my public repositories. The answer arrives
+   later, so the section has three states: loading, success and error.
+   -------------------------------------------------------------------------- */
+const GITHUB_USER = 'MJBukannan';
+const REPO_LIMIT = 6;
+
+function initGitHubRepos() {
+  const list = document.getElementById('repo-list');
+  const status = document.getElementById('repo-status');
+
+  if (!list || !status) return;
+
+  // sort=updated puts the most recently changed repos first.
+  const url = 'https://api.github.com/users/' + GITHUB_USER + '/repos?sort=updated&per_page=100';
+
+  function showLoading() {
+    list.replaceChildren();
+    status.className = 'repo-status';
+    status.textContent = 'Loading repositories…';
+  }
+
+  function showError(message) {
+    list.replaceChildren();
+    status.className = 'repo-status error';
+
+    const text = document.createElement('p');
+    text.textContent = message;
+
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'retry-btn';
+    retry.textContent = 'Retry';
+    retry.addEventListener('click', loadRepos);
+
+    status.replaceChildren(text, retry);
+  }
+
+  // 2026-10-14T05:51:00Z -> 14 Oct 2026
+  function formatDate(isoString) {
+    return new Date(isoString).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
+  // Builds one repo card. Like the project cards, all text goes in through
+  // textContent, because it comes from outside the site.
+  function createRepoCard(repo) {
+    const item = document.createElement('li');
+    item.className = 'repo-card';
+
+    const link = document.createElement('a');
+    link.href = repo.html_url;
+    link.target = '_blank';
+    // noopener stops the new tab from being able to control this page.
+    link.rel = 'noopener';
+    link.textContent = repo.name;
+
+    const title = document.createElement('h3');
+    title.appendChild(link);
+
+    const description = document.createElement('p');
+    description.textContent = repo.description || 'No description yet.';
+
+    const meta = document.createElement('p');
+    meta.className = 'repo-meta';
+    meta.textContent = (repo.language || 'Language not set') + ' · Updated ' + formatDate(repo.pushed_at || repo.updated_at);
+
+    item.append(title, description, meta);
+    return item;
+  }
+
+  // async lets the function wait for the network with await, without
+  // freezing the page while it waits.
+  async function loadRepos() {
+    showLoading();
+
+    try {
+      const response = await fetch(url);
+
+      // fetch only rejects when the request never gets an answer (offline,
+      // DNS failure). An answer such as 404 or 403 still has to be checked.
+      if (!response.ok) {
+        const limited = response.status === 403 || response.status === 429;
+        throw new Error(limited ? 'rate-limit' : 'http-' + response.status);
+      }
+
+      const repos = await response.json();
+
+      // Forks are other people's projects, so they are left out.
+      const latest = repos.filter(function (repo) {
+        return !repo.fork;
+      }).slice(0, REPO_LIMIT);
+
+      if (latest.length === 0) {
+        status.className = 'repo-status';
+        status.textContent = 'No public repositories yet.';
+        return;
+      }
+
+      status.replaceChildren();
+      list.replaceChildren(...latest.map(createRepoCard));
+    } catch (error) {
+      if (error.message === 'rate-limit') {
+        showError('GitHub is limiting requests right now. Wait a minute, then try again.');
+      } else {
+        showError('Could not load repositories. Check your internet connection and try again.');
+      }
+    }
+  }
+
+  loadRepos();
+}
+
 /* The script tag uses defer, so the HTML is already parsed by this point. */
 initThemeToggle();
 initContactForm();
 initScrollSpy();
 initProjects();
+initGitHubRepos();
