@@ -430,6 +430,105 @@ h3 {
   background-color: var(--color-accent-dark);
 }
 
+/* ---------- Empty search state ---------- */
+.project-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--color-muted);
+  animation: fade-up 0.35s ease;
+}
+
+/* display: flex above would otherwise override the hidden attribute */
+.project-empty[hidden] {
+  display: none;
+}
+
+.project-empty p {
+  margin: 0;
+}
+
+.clear-btn {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-accent);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.clear-btn:hover,
+.clear-btn:focus {
+  color: var(--color-on-accent);
+  background-color: var(--color-accent);
+}
+
+.clear-btn[hidden] {
+  display: none;
+}
+
+/* ---------- Animations ---------- */
+/* Shared keyframes: start a little lower and transparent, end in place. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Cards are rebuilt on every filter or search, so this plays each time.
+   "backwards" applies the starting frame during the stagger delay, then lets
+   go when the animation ends, so the hover lift on the card still works. */
+.project-card,
+.repo-card {
+  animation: fade-up 0.35s ease backwards;
+}
+
+/* Scroll reveal: js/script.js adds .reveal, then .is-visible on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Contact form success message slides in */
+.form-status.success {
+  animation: fade-up 0.4s ease;
+}
+
+/* Reduced motion: visitors who turned on "Reduce motion" in their system
+   settings get every change instantly, with no movement. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ---------- Contact form ---------- */
 .contact-form {
   display: flex;

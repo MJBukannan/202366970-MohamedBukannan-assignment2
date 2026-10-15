@@ -8,6 +8,10 @@
                        the chosen filter is remembered between visits
    5. GitHub repos   - latest public repos fetched from the GitHub API,
                        with loading, error and retry states
+   6. Scroll reveal  - sections fade in as they scroll into view
+
+   All animation is skipped for visitors who have asked their system for
+   reduced motion (see prefersReducedMotion and the CSS media query).
 
    Smooth scrolling is not here on purpose: it is one line of CSS
    (scroll-behavior: smooth in css/styles.css), so writing it again in
@@ -15,6 +19,10 @@
    ========================================================================== */
 
 'use strict';
+
+// True when the visitor has turned on "Reduce motion" in their system
+// settings. matchMedia runs the same test as the CSS media query.
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* --------------------------------------------------------------------------
    1. Theme toggle
@@ -112,6 +120,13 @@ function initContactForm() {
 
   function setStatus(text, isSuccess) {
     status.textContent = text;
+
+    // A CSS animation only plays when its class is added. If the success class
+    // is already there from an earlier submit, it is removed first and
+    // offsetWidth is read, which makes the browser apply that removal before
+    // the class goes back on, so the message slides in again every time.
+    status.className = 'form-status';
+    void status.offsetWidth;
     status.className = isSuccess ? 'form-status success' : 'form-status';
   }
 
@@ -248,8 +263,11 @@ function initProjects() {
   const count = document.getElementById('project-count');
   const search = document.getElementById('project-search');
   const buttons = Array.from(document.querySelectorAll('.filter-btn'));
+  const empty = document.getElementById('project-empty');
+  const emptyText = document.getElementById('project-empty-text');
+  const clearButton = document.getElementById('clear-search');
 
-  if (!grid || !count || !search) return;
+  if (!grid || !count || !search || !empty) return;
 
   // The category currently selected: 'all', 'software' or 'hardware'.
   let activeFilter = 'all';
@@ -280,9 +298,12 @@ function initProjects() {
 
   // Builds one card element from one project object. textContent is used
   // instead of innerHTML so the text is always shown as text, never run as HTML.
-  function createCard(project) {
+  // index is the card's position in the grid. It staggers the fade-in so the
+  // cards appear one after another instead of all at once.
+  function createCard(project, index) {
     const card = document.createElement('article');
     card.className = 'project-card';
+    card.style.animationDelay = (index * 60) + 'ms';
 
     const image = document.createElement('img');
     image.src = project.image;
@@ -327,9 +348,28 @@ function initProjects() {
       return matches(project, query);
     });
 
+    // map passes (project, index) to createCard, which uses the index for the delay.
     grid.replaceChildren(...visible.map(createCard));
     count.textContent = 'Showing ' + visible.length + ' of ' + projects.length + ' projects';
+
+    // Empty state: say why the grid is blank and offer a way back.
+    if (visible.length === 0) {
+      emptyText.textContent = query === ''
+        ? 'No projects in this category yet.'
+        : 'No projects match "' + search.value.trim() + '".';
+      clearButton.hidden = query === '';
+      empty.hidden = false;
+    } else {
+      empty.hidden = true;
+    }
   }
+
+  clearButton.addEventListener('click', function () {
+    search.value = '';
+    render();
+    // Put the cursor back in the search box, ready for a new search.
+    search.focus();
+  });
 
   buttons.forEach(function (button) {
     button.addEventListener('click', function () {
@@ -468,9 +508,38 @@ function initGitHubRepos() {
   loadRepos();
 }
 
+/* --------------------------------------------------------------------------
+   6. Scroll reveal
+   Each section starts slightly lower and transparent, then fades up the first
+   time it scrolls into view. The hidden starting state is added here, not in
+   the HTML, so without JavaScript (or with reduced motion) every section is
+   simply visible.
+   -------------------------------------------------------------------------- */
+function initScrollReveal() {
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) return;
+
+  const sections = Array.from(document.querySelectorAll('.section'));
+
+  const observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        // Each section only needs to animate once, so stop watching it.
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  sections.forEach(function (section) {
+    section.classList.add('reveal');
+    observer.observe(section);
+  });
+}
+
 /* The script tag uses defer, so the HTML is already parsed by this point. */
 initThemeToggle();
 initContactForm();
 initScrollSpy();
 initProjects();
 initGitHubRepos();
+initScrollReveal();
