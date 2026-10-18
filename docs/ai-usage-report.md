@@ -1,6 +1,6 @@
 # AI Usage Report
 
-SWE 363 — Assignment 1 · Mohamed AlJawad Bukannan (202366970)
+SWE 363 — Assignment 2: Interactive Features · Mohamed AlJawad Bukannan (202366970)
 
 ## 1. Tools used and use cases
 
@@ -12,58 +12,38 @@ read my files and guide me through my work.
 | Stage | What it was used for |
 |---|---|
 | Planning | Summarising the assignment guideline into a requirements checklist and a four-day plan |
-| Setup | Setting up the folder structure and explaining what belongs in `.gitignore` and why |
-| Markup | Writing the semantic HTML skeleton, and explaining `meta viewport`, semantic elements and `defer` |
-| Content | Polishing my description of the ICS 202, ICS 108 and COE 203 projects into project cards |
-| Writing | Polishing my own draft of the About Me intro |
-| Assets | Generating the placeholder SVG used by the project cards |
-| Styling | Fixing my mistakes in `styles.css` and guiding me step by step in creating it — tokens, Flexbox header, Grid cards, both breakpoints |
-| Interactivity | Guiding me through the theme toggle, contact form validation and scroll spy, and helping me debug |
-| Review | Explaining trade-offs, catching a contrast problem and a mobile layout bug |
-| Testing | Driving a headless browser to check both themes, all form paths and four viewport widths |
+| Setup | Walking me through creating the new repository from my PA1 site without its git history, and pushing it to GitHub |
+| Dynamic content | Help in developing the projects array, the card-building function, filter buttons, live search and the result count, and explaining each part |
+| Data handling | Polishing the "Latest on GitHub" section with `fetch`, and remembering the chosen filter in `localStorage` |
+| Animation | Finetuning the scroll reveal, the staggered card fade-in and the form message animation |
+| Error handling | Explaining the loading, error and Retry states for the GitHub request, and the empty search state |
+| Review | Discussing whether reduced-motion support was worth adding |
 | Documentation | Polishing the technical documentation and README from the finished code |
 
 ## 2. Benefits and challenges
 
 ### Benefits
 
-**Explanations on demand, at the moment they mattered.** When `novalidate`
-appeared in a suggestion, I asked what it does before accepting it, and learned
-that it disables the browser's validation *pop-ups* but not its validation — the
-checks are still available through `input.validity`. That changed the code: no
-hand-written email pattern was needed.
+**Catching mistakes that look correct.** The clearest example was the GitHub
+request. I assumed `fetch` fails whenever something goes wrong, but it only
+fails when no answer arrives at all. If GitHub answers with an error such as
+403 (rate limit), `fetch` still succeeds, so the code has to check
+`response.ok` itself. Without that check the section would have shown nothing,
+with no error message, exactly when it needed one most.
 
-**Review I would not otherwise have had.** Two problems were caught before
-submission that I would probably have shipped: the light-theme teal accent had
-too little contrast to stay readable on the dark background, and adding the
-theme toggle made the stacked mobile header taller than the scroll offset that
-was supposed to clear it, so tapping a navigation link hid the heading behind
-the header.
-
+**Seeing side effects before they shipped.** Adding a fade-in animation to the
+project cards would have quietly broken the hover lift from Assignment 1,
+because a running animation overrides normal styles. Using the `backwards` fill
+mode fixes this, and it is not something I would have known to look for.
 ### Challenges
 
-**Writing in a language I had not used before.** JavaScript was new to me, and
-so was the browser as a place to run code. Reading a suggestion and deciding
-whether it was right is harder when the syntax itself is unfamiliar, so early on
-I could not always tell a good answer from a plausible one. What worked was
-asking for the reasoning behind a line rather than only the line — that is how
-`novalidate` turned from a word I was accepting on trust into something I could
-explain.
+**Asynchronous code.** `async`/`await` was new to me. The idea that a function
+can pause and wait for the network while the rest of the page keeps working took
+some time to make sense
 
-**Setting up a project with tools I had not used before.** The repository
-layout, the version-control workflow and the local development setup were all
-new at the same time as the code was. Deciding what belongs in `.gitignore`, or
-why a static site needs a local server at all, are not questions I would have
-known to ask. Having them explained as they came up kept the setup from becoming
-a separate obstacle before any of the actual work started.
-
-**Understanding and applying new HTML and CSS concepts.** Knowing that CSS
-custom properties, Grid and media queries exist is not the same as knowing where
-each belongs. The gap was in judgement rather than syntax: which layout system
-suits which part of the page, how many breakpoints are enough, why a colour
-should be a token instead of a value typed in twice. Applying those to my own
-page, and then having to justify each one in the technical documentation, is
-what made them stick.
+**Testing states that do not happen on their own.** A loading spinner, an
+offline error or a rate-limit message only appear in specific conditions. I had
+to create those conditions deliberately by turning of the WiFi first rather than just opening the page.
 
 ## 3. Learning outcomes
 

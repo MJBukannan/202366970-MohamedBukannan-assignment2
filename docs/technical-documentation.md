@@ -493,10 +493,7 @@ a script, with the GitHub API mocked so each state could be forced.
 
 **Manual.**
 
-<!-- TODO (Moody): fill in after testing by hand on Saturday — which browsers
-     (e.g. Chrome and Safari on macOS), which widths (phone / tablet /
-     desktop), Wi-Fi off for the GitHub error, Reduce motion on, and anything
-     you found and fixed. -->
+Tested by hand in Chrome and Safari on macOS. At desktop, tablet and phone widths the layout, filters and search worked the same in both. With Wi-Fi off, the GitHub section showed the error message, and Retry loaded the repos once Wi-Fi was back. With Reduce motion turned on, nothing animated.
 
 ## Known limitations
 

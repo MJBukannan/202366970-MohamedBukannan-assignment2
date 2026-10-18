@@ -14,8 +14,6 @@ no framework, no build step and no backend.
 
 ## Live demo
 
-<!-- TODO: enable GitHub Pages (Settings → Pages → Deploy from branch → main)
-     and check that this link works before submitting. -->
 <https://mjbukannan.github.io/202366970-MohamedBukannan-assignment2/>
 
 ## What's new in Assignment 2
@@ -114,21 +112,18 @@ with a Retry button instead of the repositories.
 
 ## Browser support
 
-The features used — `fetch`, `async`/`await`, `IntersectionObserver`,
-`matchMedia`, CSS custom properties, keyframe animations and `localStorage` —
-are supported in current versions of Chrome, Edge, Safari and Firefox.
+Tested by hand in **Chrome** and **Safari** on macOS, and with an automated
+Playwright pass in Chromium at desktop and 320px phone width, with both normal
+and reduced motion, and with the GitHub API mocked to force the success,
+offline, rate-limit and retry states. The features used — `fetch`,
+`async`/`await`, `IntersectionObserver`, `matchMedia`, CSS custom properties,
+keyframe animations and `localStorage` — are supported in current versions of
+Chrome, Edge, Safari and Firefox.
 
-<!-- TODO (Moody): after testing by hand on Saturday, add which browsers and
-     screen sizes you checked, e.g. "Tested by hand in Chrome and Safari on
-     macOS and on iPhone." -->
-
-Automated checks were run in Chromium at desktop width with normal motion and
-with reduced motion; details are in the
+Details are in the
 [technical documentation](docs/technical-documentation.md#browser-and-device-testing).
 
 ## AI usage
-
-<!-- TODO: revise this summary once the AI usage report is finished. -->
 
 AI assistance (Claude) was used to turn the assignment brief into a day-by-day
 plan, to write the new features, and to explain each one step by step. I
